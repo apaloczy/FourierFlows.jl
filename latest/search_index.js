@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Overview",
     "category": "section",
-    "text": "FourierFlows provides solvers for partial differential equations on doubly-periodic domains using Fourier-based pseudospectral methods. A central intent of the software's design is also to provide a framework for writing new, fast solvers for new physical problems. The code is written in Julia."
+    "text": "FourierFlows provides solvers for partial differential equations on doubly-periodic domains using Fourier-based pseudospectral methods. A central intent of the software\'s design is also to provide a framework for writing new, fast solvers for new physical problems. The code is written in Julia."
 },
 
 {
@@ -45,7 +45,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Source code organization",
     "category": "section",
-    "text": "The code is divided along conceptual lines into problem-agnostic and problem-specific components. Files that contain problem-agnostic parts of the code are stored in /src. Files in /src define the domain, 'AbstractTypes' that supertype problem-specific types, and time-stepper types and routines. Problem-specific modules are stores in /src/physics.Here's an overview of the code structure:/src/\nFourierFlows.jl\nDefines supertyping AbstractParams, AbstractGrid, etc.\nDefines a Problem type to organize the grid, vars, params,   equation, and timestepper into a single structure.\nIncludes all sources files and physics files.\ntimesteppers.jl: defines modules and stepforward! routines for   various time-steppers. Current implemented time-steppers are:\nForward Euler (+ Filtered Forward Euler)\n3rd-order Adams-Bashforth (AB3)\n4th-order Runge-Kutta (RK4) (+ Filtered RK4)\n4th-order Runge-Kutta Exponential Time Differencing (ETDRK4)\n(+ Filtered ETDRK4)\nphysics/\ntwodturb.jl: Defines a TwoDTurb module that provides a       solver for the two-dimensional vorticity equation.\nbarotropicqg.jl: Defines a BarotropicQG module that provides       several solvers for the barotropic QG model that permit beta,       topography, beta + topography, and forcing.\ntwomodeboussinesq.jl: Defines a TwoModeBoussinesq module       that provides solvers for a two-mode truncation of the       rotating, stratified Boussinesq equation.\ntraceradvdiff.jl: Defines a TracerAdvDiff module that       provides a solver for a two-dimensional and periodic tracer       field in a given 2D flow (u, w), which can be an arbitrary       function of x, z, and t.\ntracerpatcheqn.jl: ..."
+    "text": "The code is divided along conceptual lines into problem-agnostic and problem-specific components. Files that contain problem-agnostic parts of the code are stored in /src. Files in /src define the domain, \'AbstractTypes\' that supertype problem-specific types, and time-stepper types and routines. Problem-specific modules are stores in /src/physics.Here\'s an overview of the code structure:/src/\nFourierFlows.jl\nDefines supertyping AbstractParams, AbstractGrid, etc.\nDefines a Problem type to organize the grid, vars, params,   equation, and timestepper into a single structure.\nIncludes all sources files and physics files.\ntimesteppers.jl: defines modules and stepforward! routines for   various time-steppers. Current implemented time-steppers are:\nForward Euler (+ Filtered Forward Euler)\n3rd-order Adams-Bashforth (AB3)\n4th-order Runge-Kutta (RK4) (+ Filtered RK4)\n4th-order Runge-Kutta Exponential Time Differencing (ETDRK4)\n(+ Filtered ETDRK4)\nphysics/\ntwodturb.jl: Defines a TwoDTurb module that provides a       solver for the two-dimensional vorticity equation.\nbarotropicqg.jl: Defines a BarotropicQG module that provides       several solvers for the barotropic QG model that permit beta,       topography, beta + topography, and forcing.\ntwomodeboussinesq.jl: Defines a TwoModeBoussinesq module       that provides solvers for a two-mode truncation of the       rotating, stratified Boussinesq equation.\ntraceradvdiff.jl: Defines a TracerAdvDiff module that       provides a solver for a two-dimensional and periodic tracer       field in a given 2D flow (u, w), which can be an arbitrary       function of x, z, and t.\ntracerpatcheqn.jl: ..."
 },
 
 {
@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Writing fast solvers",
     "category": "section",
-    "text": "The performance-intensive part of the code involves just two functions: the timestepping scheme stepforward!, and the function calcN! that calculates the nonlinear part of the given equation's right-hand side. Optimization of these two functions for a given problem will produce the fastest possible code."
+    "text": "The performance-intensive part of the code involves just two functions: the timestepping scheme stepforward!, and the function calcN! that calculates the nonlinear part of the given equation\'s right-hand side. Optimization of these two functions for a given problem will produce the fastest possible code."
 },
 
 {
@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Future work",
     "category": "section",
-    "text": "The code is in the chaotic stage of development. A main goal for the future is to permit the use of shared memory parallelism in the compute-intensive routines (shared-memory parallelism provided already by FFTW/MKLFFT, but is not yet native to Julia for things like element-wise matrix multiplication, addition, and assignment). This feature may possibly be enabled by Intel Lab's ParallelAccelerator package."
+    "text": "The code is in the chaotic stage of development. A main goal for the future is to permit the use of shared memory parallelism in the compute-intensive routines (shared-memory parallelism provided already by FFTW/MKLFFT, but is not yet native to Julia for things like element-wise matrix multiplication, addition, and assignment). This feature may possibly be enabled by Intel Lab\'s ParallelAccelerator package."
 },
 
 {
@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.stepforward!",
     "category": "Method",
-    "text": "stepforward!(prob, nsteps)\n\nStep forward the problem 'prob' for 'nsteps'.\n\n\n\n"
+    "text": "stepforward!(prob, nsteps)\n\nStep forward the problem \'prob\' for \'nsteps\'.\n\n\n\n"
 },
 
 {
