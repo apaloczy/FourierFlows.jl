@@ -148,23 +148,23 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#Base.resize!-Tuple{FourierFlows.AbstractDiagnostic,Int64}",
     "page": "Functions exported from FourierFlows:",
     "title": "Base.resize!",
-    "category": "Method",
-    "text": "resize!(diag, newnum)\n\nResize the Diagnostic data and time arrays to length newnum. \n\n\n\n"
+    "category": "method",
+    "text": "resize!(diag, newnum)\n\nResize the Diagnostic data and time arrays to length newnum.\n\n\n\n"
 },
 
 {
     "location": "man/docstrings.html#FourierFlows.increment!-Tuple{AbstractArray}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.increment!",
-    "category": "Method",
-    "text": "increment!(diags)\n\nIncrement the array of Diagnostics diags. \n\n\n\n"
+    "category": "method",
+    "text": "increment!(diags)\n\nIncrement the array of Diagnostics diags.\n\n\n\n"
 },
 
 {
     "location": "man/docstrings.html#FourierFlows.increment!-Tuple{FourierFlows.AbstractDiagnostic}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.increment!",
-    "category": "Method",
+    "category": "method",
     "text": "increment!(diag)\n\nIncrement the Diagnostic diag.\n\n\n\n"
 },
 
@@ -172,7 +172,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.savediagnostic-Tuple{FourierFlows.AbstractDiagnostic,String,String}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.savediagnostic",
-    "category": "Method",
+    "category": "method",
     "text": "savediagnostic(diag, diagname)\n\nSave diagnostics to file, labeled by the string diagname.\n\n\n\n"
 },
 
@@ -180,7 +180,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.saveoutput-Tuple{FourierFlows.Output}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.saveoutput",
-    "category": "Method",
+    "category": "method",
     "text": "saveoutput(out)\n\nSave current output fields for file in out.filename.\n\n\n\n"
 },
 
@@ -188,7 +188,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.saveproblem-Tuple{FourierFlows.AbstractProblem,String}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.saveproblem",
-    "category": "Method",
+    "category": "method",
     "text": "saveproblem(prob, filename)\n\nSave certain aspects of a problem timestepper, grid, and params. Functions that are fields in params are not saved.\n\n\n\n"
 },
 
@@ -196,7 +196,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,AbstractArray,Any}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.stepforward!",
-    "category": "Method",
+    "category": "method",
     "text": "stepforward!(prob, diags, nsteps)\n\nStep forward the problem prob for nsteps while calculating the diagnostics in diags.\n\n\n\n"
 },
 
@@ -204,7 +204,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,Any}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.stepforward!",
-    "category": "Method",
+    "category": "method",
     "text": "stepforward!(prob, nsteps)\n\nStep forward the problem \'prob\' for \'nsteps\'.\n\n\n\n"
 },
 
@@ -212,7 +212,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.stepforward!",
-    "category": "Method",
+    "category": "method",
     "text": "stepforward!(prob)\n\nStep forward the Problem prob for one timestep.\n\n\n\n"
 },
 
@@ -220,7 +220,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.update!-Tuple{FourierFlows.AbstractDiagnostic}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.update!",
-    "category": "Method",
+    "category": "method",
     "text": "update!(diag)\n\nUpdate diag with its current value.\n\n\n\n"
 },
 
@@ -236,7 +236,7 @@ var documenterSearchIndex = {"docs": [
     "location": "man/docstrings.html#FourierFlows.ZeroDGrid",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.ZeroDGrid",
-    "category": "Type",
+    "category": "type",
     "text": "Doc.\n\n\n\n"
 },
 
