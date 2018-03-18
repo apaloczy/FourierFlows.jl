@@ -237,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.ZeroDGrid",
     "category": "type",
-    "text": "Doc.\n\n\n\n"
+    "text": "ZeroDGrid(nvars)\n\nConstructs a placeholder grid object for \"0D\" problems (in other words, systems of ODEs) with nvars variables.\n\n\n\n"
 },
 
 {
