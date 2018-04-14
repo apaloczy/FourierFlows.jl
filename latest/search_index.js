@@ -153,19 +153,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/docstrings.html#FourierFlows.increment!-Tuple{AbstractArray}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.increment!",
-    "category": "method",
-    "text": "increment!(diags)\n\nIncrement the array of Diagnostics diags.\n\n\n\n"
-},
-
-{
     "location": "man/docstrings.html#FourierFlows.increment!-Tuple{FourierFlows.AbstractDiagnostic}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.increment!",
     "category": "method",
-    "text": "increment!(diag)\n\nIncrement the Diagnostic diag.\n\n\n\n"
+    "text": "increment!(diag)\nincrement!(diags)\n\nIncrement the Diagnostic diag, or an array of Diagnostics diags.\n\n\n\n"
 },
 
 {
@@ -193,27 +185,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,AbstractArray,Any}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.stepforward!",
-    "category": "method",
-    "text": "stepforward!(prob, diags, nsteps)\n\nStep forward the problem prob for nsteps while calculating the diagnostics in diags.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,Any}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.stepforward!",
-    "category": "method",
-    "text": "stepforward!(prob, nsteps)\n\nStep forward the problem \'prob\' for \'nsteps\'.\n\n\n\n"
-},
-
-{
     "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem}",
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.stepforward!",
     "category": "method",
-    "text": "stepforward!(prob)\n\nStep forward the Problem prob for one timestep.\n\n\n\n"
+    "text": "stepforward!(prob)\nstepforward!(prob, nsteps)\nstepforward!(prob, diags, nsteps)\n\nStep forward the Problem prob for one timestep. If nsteps is provided, loop for nsteps. If diagnostics are provided, in diags, increment diagnostics while stepping the solution forward.\n\n\n\n"
 },
 
 {
@@ -237,7 +213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Functions exported from FourierFlows:",
     "title": "FourierFlows.ZeroDGrid",
     "category": "type",
-    "text": "ZeroDGrid(nvars)\n\nConstructs a placeholder grid object for \"0D\" problems (in other words, systems of ODEs) with nvars variables.\n\n\n\n"
+    "text": "ZeroDGrid()\n\nConstructs a placeholder grid object for \"0D\" problems (in other words, systems of ODEs).\n\n\n\n"
 },
 
 {
