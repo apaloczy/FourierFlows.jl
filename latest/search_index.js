@@ -45,7 +45,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Source code organization",
     "category": "section",
-    "text": "The code is divided along conceptual lines into problem-agnostic and problem-specific components. Files that contain problem-agnostic parts of the code are stored in /src. Files in /src define the domain, \'AbstractTypes\' that supertype problem-specific types, and time-stepper types and routines. Problem-specific modules are stores in /src/physics.Here\'s an overview of the code structure:/src/\nFourierFlows.jl\nDefines supertyping AbstractParams, AbstractGrid, etc.\nDefines a Problem type to organize the grid, vars, params,   equation, and timestepper into a single structure.\nIncludes all sources files and physics files.\ntimesteppers.jl: defines modules and stepforward! routines for   various time-steppers. Current implemented time-steppers are:\nForward Euler (+ Filtered Forward Euler)\n3rd-order Adams-Bashforth (AB3)\n4th-order Runge-Kutta (RK4) (+ Filtered RK4)\n4th-order Runge-Kutta Exponential Time Differencing (ETDRK4)\n(+ Filtered ETDRK4)\nphysics/\ntwodturb.jl: Defines a TwoDTurb module that provides a       solver for the two-dimensional vorticity equation.\nbarotropicqg.jl: Defines a BarotropicQG module that provides       several solvers for the barotropic QG model that permit beta,       topography, beta + topography, and forcing.\ntwomodeboussinesq.jl: Defines a TwoModeBoussinesq module       that provides solvers for a two-mode truncation of the       rotating, stratified Boussinesq equation.\ntraceradvdiff.jl: Defines a TracerAdvDiff module that       provides a solver for a two-dimensional and periodic tracer       field in a given 2D flow (u, w), which can be an arbitrary       function of x, z, and t.\ntracerpatcheqn.jl: ..."
+    "text": "The code is divided along conceptual lines into problem-agnostic and problem-specific components. Files that contain problem-agnostic parts of the code are stored in /src. Files in /src define the domain, \'AbstractTypes\' that supertype problem-specific types, and time-stepper types and routines. Problem-specific modules are stores in /src/physics.Here\'s an overview of the code structure:/src/\nFourierFlows.jl\nDefines supertyping AbstractParams, AbstractGrid, etc.\nDefines a Problem type to organize the grid, vars, params,   equation, and timestepper into a single structure.\nIncludes all sources files and physics files.\ntimesteppers.jl: defines modules and stepforward! routines for   various time-steppers. Current implemented time-steppers are:\nForward Euler (+ Filtered Forward Euler)\n3rd-order Adams-Bashforth (AB3)\n4th-order Runge-Kutta (RK4) (+ Filtered RK4)\n4th-order Runge-Kutta Exponential Time Differencing (ETDRK4)\n(+ Filtered ETDRK4)\nphysics/\ntwodturb.jl: Defines a TwoDTurb module that provides a       solver for the two-dimensional vorticity equation.\nbarotropicqg.jl: Defines a BarotropicQG module that provides       several solvers for the barotropic QG model that permit beta,       topography, beta + topography, and forcing.\nkuramotosivashinsky.jl: Defines a KuramotoSivashinsky module that       solves the Kuramoto-Sivashinsky.\ntraceradvdiff.jl: Defines a TracerAdvDiff module that       provides a solver for a two-dimensional and periodic tracer       field in a given 2D flow (u, w), which can be an arbitrary       function of x, z, and t."
 },
 
 {
@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Writing fast solvers",
     "category": "section",
-    "text": "The performance-intensive part of the code involves just two functions: the timestepping scheme stepforward!, and the function calcN! that calculates the nonlinear part of the given equation\'s right-hand side. Optimization of these two functions for a given problem will produce the fastest possible code."
+    "text": "The performance-intensive part of the code involves just two functions: the time-stepping scheme stepforward!, and the function calcN! that calculates the nonlinear part of the given equation\'s right-hand side. Optimization of these two functions for a given problem will produce the fastest possible code."
 },
 
 {
@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Examples",
     "category": "section",
-    "text": "examples/twodturb/McWilliams.jl: A script that simulates decaying two-dimensional turbulence reproducing the results of the paper by\nMcWilliams, J. C. (1984). The emergence of isolated coherent vortices in turbulent flow. J. Fluid Mech., 146, 21-43\nexamples/barotropicqg/decayingbetaturb.jl: An example script that simulates decaying quasi-geostrophic flow on a beta-plane.\nexamples/barotropicqg/ACConelayer.jl: A script that simulates barotropic quasi-geostrophic flow above topography reproducing the results of the paper by\nConstantinou, N. C. (2018). A barotropic model of eddy saturation. J. Phys. Oceanogr., in press, doi:10.1175/JPO-D-17-0182.1"
+    "text": "examples/twodturb/McWilliams.jl: A script that simulates decaying two-dimensional turbulence reproducing the results of the paper by\nMcWilliams, J. C. (1984). The emergence of isolated coherent vortices in turbulent flow. J. Fluid Mech., 146, 21-43\nexamples/barotropicqg/decayingbetaturb.jl: An example script that simulates decaying quasi-geostrophic flow on a beta-plane demonstrating zonation.\nexamples/barotropicqg/ACConelayer.jl: A script that simulates barotropic quasi-geostrophic flow above topography reproducing the results of the paper by\nConstantinou, N. C. (2018). A barotropic model of eddy saturation. J. Phys. Oceanogr., 48 (2), 397-411"
 },
 
 {
@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Tutorials",
     "category": "section",
-    "text": "Pages = [\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\"\n        ]\nDepth = 1"
+    "text": "Pages = [\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\"\n    \"modules/kuramotosivashinsky.md\"\n    \"modules/traceradvdiff.md\"\n        ]\nDepth = 1"
 },
 
 {
@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Index",
     "category": "section",
-    "text": "Pages = [\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\",\n    \"man/docstrings.md\",\n    ]"
+    "text": "Pages = [\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\"\n    \"modules/kuramotosivashinsky.md\"\n    \"modules/traceradvdiff.md\"\n    \"man/docstrings.md\",\n    ]"
 },
 
 {
@@ -122,18 +122,50 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "modules/barotropicqg.html#",
-    "page": "BarotropicQG Modules",
-    "title": "BarotropicQG Modules",
+    "page": "BarotropicQG Module",
+    "title": "BarotropicQG Module",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "modules/barotropicqg.html#BarotropicQG-Modules-1",
-    "page": "BarotropicQG Modules",
-    "title": "BarotropicQG Modules",
+    "location": "modules/barotropicqg.html#BarotropicQG-Module-1",
+    "page": "BarotropicQG Module",
+    "title": "BarotropicQG Module",
     "category": "section",
-    "text": "This module solves the quasi-geostrophic barotropic vorticity equation on a beta-plane of variable fluid depth H-h(xy). The flow is obtained through a streamfunction psi as (uupsilon) = (-partial_ypsi partial_xpsi). All flow fields can be obtained from the quasi-geostrophic potential vorticity (QGPV). Here the QGPV isunderbracef_0 + beta y_textplanetary PV + underbrace(partial_x upsilon\n	- partial_y u)_textrelative vorticity +\n	underbracefracf_0 hH_texttopographic PVThe dynamical variable is the component of the vorticity of the flow normal to the plane of motion, zetaequiv partial_x v- partial_y u = nabla^2psi. Also, we denote the topographic PV with etaequiv f_0 hH. Thus, the equation solved by the module is:partial_t zeta + J(psi underbracezeta + eta_equiv q) +\nbetapartial_xpsi = underbrace-leftmu + nu(-1)^n_nu nabla^2n_nu\nright zeta _textrmdissipation + f where J(fg) = (partial_xf)(partial_y g)-(partial_x g)(partial_y f). On the right hand side, f(xyt) is forcing, mu is linear drag, and nu is hyperviscosity. Plain old viscosity corresponds to n_nu=1. The sum of relative vorticity and topographic PV is denoted with qequivzeta+eta.The equation is time-stepped forward in Fourier space:partial_t widehatzeta = - widehatJ(psi q) +betafracmathrmik_xk^2widehatzeta -left(mu\n+nu k^2n_nuright) widehatzeta  + widehatf In doing so the Jacobian is computed in the conservative form: J(fg) = partial_y  (partial_x f) g -partial_x (partial_y f) g.Thus:mathcalL = betafracmathrmik_xk^2 - mu - nu k^2n_nu mathcalN(widehatzeta) = - mathrmik_x mathrmFFT(u q)-\n	mathrmik_y mathrmFFT(upsilon q) "
+    "text": "This module solves the quasi-geostrophic barotropic vorticity equation on a beta-plane of variable fluid depth H-h(xy). The flow is obtained through a streamfunction psi as (u upsilon) = (-partial_ypsi partial_xpsi). All flow fields can be obtained from the quasi-geostrophic potential vorticity (QGPV). Here the QGPV isunderbracef_0 + beta y_textplanetary PV + underbrace(partial_x upsilon\n	- partial_y u)_textrelative vorticity +\n	underbracefracf_0 hH_texttopographic PVThe dynamical variable is the component of the vorticity of the flow normal to the plane of motion, zetaequiv partial_x upsilon- partial_y u = nabla^2psi. Also, we denote the topographic PV with etaequiv f_0 hH. Thus, the equation solved by the module is:partial_t zeta + J(psi underbracezeta + eta_equiv q) +\nbetapartial_xpsi = underbrace-leftmu + nu(-1)^n_nu nabla^2n_nu\nright zeta _textrmdissipation + f where J(fg) = (partial_xf)(partial_y g)-(partial_x g)(partial_y f). On the right hand side, f(xyt) is forcing, mu is linear drag, and nu is hyperviscosity. Plain old viscosity corresponds to n_nu=1. The sum of relative vorticity and topographic PV is denoted with qequivzeta+eta.The equation is time-stepped forward in Fourier space:partial_t widehatzeta = - widehatJ(psi q) +betafracmathrmik_xk^2widehatzeta -left(mu\n+nu k^2n_nuright) widehatzeta  + widehatf In doing so the Jacobian is computed in the conservative form: J(fg) = partial_y  (partial_x f) g -partial_x (partial_y f) g.Thus:mathcalL = betafracmathrmik_xk^2 - mu - nu k^2n_nu mathcalN(widehatzeta) = - mathrmik_x mathrmFFT(u q)-\n	mathrmik_y mathrmFFT(upsilon q) "
+},
+
+{
+    "location": "modules/kuramotosivashinsky.html#",
+    "page": "Kuramoto-Sivashinsky Module",
+    "title": "Kuramoto-Sivashinsky Module",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/kuramotosivashinsky.html#Kuramoto-Sivashinsky-Module-1",
+    "page": "Kuramoto-Sivashinsky Module",
+    "title": "Kuramoto-Sivashinsky Module",
+    "category": "section",
+    "text": "This module solves the Kuramoto-Sivashinsky equation for u(xt):partial_t u + partial_x^4 u + partial_x^2 u + upartial_x u = 0 The equation is time-stepped forward in Fourier space:partial_t widehatu + k_x^4 widehatu - k_x^2 widehatu + widehat upartial_x u  = 0 Thus:mathcalL = k_x^2 - k_x^4 mathcalN(widehatu) = - mathrmFFT(u partial_x u) The function calcN! implements dealiasing to avoid energy piling up at the grid-scale."
+},
+
+{
+    "location": "modules/traceradvdiff.html#",
+    "page": "TracerAdvDiff Module",
+    "title": "TracerAdvDiff Module",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/traceradvdiff.html#TracerAdvDiff-Module-1",
+    "page": "TracerAdvDiff Module",
+    "title": "TracerAdvDiff Module",
+    "category": "section",
+    "text": "This module solves the advection diffusion equation for a passive tracer concentration c(xyt) in two-dimensions:partial_t c + boldsymbolu boldsymbolcdot boldsymbolnabla c = kappa nabla^2 c where boldsymbolu = (uupsilon) is the two-dimensional advecting velocity and kappa is the diffusivity."
 },
 
 {
