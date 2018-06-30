@@ -25,6 +25,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Usage-1",
+    "page": "Home",
+    "title": "Usage",
+    "category": "section",
+    "text": "The code solves partial differential equations of the general form:partial_t u = mathcalLu + mathcalN(u) We decompose the right hand side of the above in a linear part (mathcalLu) and a nonlinear part (mathcalN(u)). The nonlinear part may include external forcing, e.g., mathcalN(u) = -upartial_x u + f."
+},
+
+{
     "location": "index.html#Installation-1",
     "page": "Home",
     "title": "Installation",
@@ -33,43 +41,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Basic-Notation-1",
-    "page": "Home",
-    "title": "Basic Notation",
-    "category": "section",
-    "text": "The code solves partial differential equations of the general form:partial_t u = mathcalLu + mathcalN(u) We decompose the right hand side of the above in a linear part (mathcalLu) and a nonlinear part (mathcalN(u)). The time steppers treat the linear and nonlinear parts differently.The coefficients for the linear operator mathcalL are stored in array LC. The term mathcalN(u) is computed for by calling the function calcN!."
-},
-
-{
-    "location": "index.html#Source-code-organization-1",
-    "page": "Home",
-    "title": "Source code organization",
-    "category": "section",
-    "text": "The code is divided along conceptual lines into problem-agnostic and problem-specific components. Files that contain problem-agnostic parts of the code are stored in /src. Files in /src define the domain, \'AbstractTypes\' that supertype problem-specific types, and time-stepper types and routines. Problem-specific modules are stores in /src/physics.Here\'s an overview of the code structure:/src/\nFourierFlows.jl\nDefines supertyping AbstractParams, AbstractGrid, etc.\nDefines a Problem type to organize the grid, vars, params,   equation, and timestepper into a single structure.\nIncludes all sources files and physics files.\ntimesteppers.jl: defines modules and stepforward! routines for   various time-steppers. Current implemented time-steppers are:\nForward Euler\n3rd-order Adams-Bashforth (AB3)\n4th-order Runge-Kutta (RK4)\n4th-order Runge-Kutta Exponential Time Differencing (ETDRK4)\n4th-order Dual Runge-Kutta (DualRK4)\n4th-order Dual Runge-Kutta Exponential Time Differencing (DualETDRK4)\nFor each time-stepper exists also a \"filtered\" version that filters   out high-wavenumber spectral components of the solution. The Dual   time-steppers evolve a state variable that comprises both of real valued   and complex valued fields.\nphysics/\ntwodturb.jl: Defines a TwoDTurb module that provides a       solver for the two-dimensional vorticity equation.\nbarotropicqg.jl: Defines a BarotropicQG module that provides       several solvers for the barotropic QG model that permit beta,       topography, beta + topography, and forcing.\nkuramotosivashinsky.jl: Defines a KuramotoSivashinsky module that       solves the Kuramoto-Sivashinsky.\nverticallyfourierboussinesq.jl: Defines a VerticallyFourierBoussinesq module that       solves the two-mode truncation of the Fourier series thin-layer approximation to the hydrostatic Boussinesq equations.\nverticallycosinerboussinesq.jl: Defines a VerticallyCosineBoussinesq module that       solves the two-mode truncation of the Sin/Cos series thin-layer approximation to the hydrostatic Boussinesq equations.\ntraceradvdiff.jl: Defines a TracerAdvDiff module that       provides a solver for a two-dimensional and periodic tracer       field in a given 2D flow (u, w), which can be an arbitrary       function of x, z, and t."
-},
-
-{
     "location": "index.html#Writing-fast-solvers-1",
     "page": "Home",
     "title": "Writing fast solvers",
     "category": "section",
     "text": "The performance-intensive part of the code involves just two functions: the time-stepping scheme stepforward!, and the function calcN! that calculates the nonlinear part of the given equation\'s right-hand side. Optimization of these two functions for a given problem will produce the fastest possible code."
-},
-
-{
-    "location": "index.html#Examples-1",
-    "page": "Home",
-    "title": "Examples",
-    "category": "section",
-    "text": "examples/twodturb/McWilliams.jl: A script that simulates decaying two-dimensional turbulence reproducing the results of the paper by\nMcWilliams, J. C. (1984). The emergence of isolated coherent vortices in turbulent flow. J. Fluid Mech., 146, 21-43\nexamples/barotropicqg/decayingbetaturb.jl: An example script that simulates decaying quasi-geostrophic flow on a beta-plane demonstrating zonation.\nexamples/barotropicqg/ACConelayer.jl: A script that simulates barotropic quasi-geostrophic flow above topography reproducing the results of the paper by\nConstantinou, N. C. (2018). A barotropic model of eddy saturation. J. Phys. Oceanogr., 48 (2), 397-411"
-},
-
-{
-    "location": "index.html#Tutorials-1",
-    "page": "Home",
-    "title": "Tutorials",
-    "category": "section",
-    "text": "Pages = [\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\"\n    \"modules/kuramotosivashinsky.md\"\n    \"modules/traceradvdiff.md\"\n        ]\nDepth = 1"
 },
 
 {
@@ -89,19 +65,91 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#DocStrings-1",
-    "page": "Home",
-    "title": "DocStrings",
-    "category": "section",
-    "text": "Pages = [\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\",\n    \"modules/boussinesq.md\",\n    \"modules/kuramotosivashinsky.md\",\n    \"modules/traceradvdiff.md\",\n    \"man/docstrings.md\",\n    ]\nDepth = 2"
+    "location": "basics.html#",
+    "page": "Code Basics",
+    "title": "Code Basics",
+    "category": "page",
+    "text": ""
 },
 
 {
-    "location": "index.html#Index-1",
-    "page": "Home",
-    "title": "Index",
+    "location": "basics.html#Code-Basics-1",
+    "page": "Code Basics",
+    "title": "Code Basics",
     "category": "section",
-    "text": "Pages = [\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\",\n    \"modules/boussinesq.md\",\n    \"modules/kuramotosivashinsky.md\",\n    \"modules/traceradvdiff.md\",\n    \"man/docstrings.md\",\n    ]"
+    "text": ""
+},
+
+{
+    "location": "basics.html#Basic-Notation-1",
+    "page": "Code Basics",
+    "title": "Basic Notation",
+    "category": "section",
+    "text": "The code solves partial differential equations of the general form:partial_t u = mathcalLu + mathcalN(u) We decompose the right hand side of the above in a linear part (mathcalLu) and a nonlinear part (mathcalN(u)). The time steppers treat the linear and nonlinear parts differently.Boundary conditions in all spatial dimensions are periodic. That allows us to use a Fourier base. The equation is time-stepped forward in Fourier space. That way u becomes an array with all Fourier coefficients of the solution. The coefficients for the linear operator mathcalL are stored in an array called LC. The term mathcalN(u) is computed for by calling the function calcN!.ODEs are special cases of the above. Thus the code also solves ODEs."
+},
+
+{
+    "location": "basics.html#Abstract-SuperTypes-1",
+    "page": "Code Basics",
+    "title": "Abstract SuperTypes",
+    "category": "section",
+    "text": "The code is divided along conceptual lines into problem-agnostic and problem-specific components. Files that contain problem-agnostic parts of the code are stored in /src. Files in /src define the domain, \'AbstractTypes\' that supertype problem-specific types, and time-stepper types and routines. Problem-specific modules are stores in /src/physics.Below is a list of all Abstract Supertypes used by the code:AbstractGrid: Includes all variables that have to do with the grid, both inphysical space as well as in wavenumber space. Currently implemented are: ZeroGrid for ODEs, OneGrid for PDEs with one spatial dimension, and TwoGrid for PDEs with two spatial dimensions. Grids are generic and work for any problem of that particular dimension.AbstractParams: Includes all parameters or functions related with the problemdo not vary throughout the integration.AbstractVars: Includes all variables of the problem that change along theintegration.AbstractEquation: Includes the array with the coefficients of the linear partof the equation, LC as well as function calcN! that computes the nonlinear part of the equation.AbstractState: Includes the solution sol at current time-step as well asthe time-step dt, the time t, and step which counts the number of time-steps taken.AbstractTimeStepper: Includes all details for the time-stepper (e.g., dt, various coefficients, sol at intermediate time-step values). Time-steppers are generic and work for any problem.\nAbstractProblem: A super-supertype that includes all of the above. That isproblem includes grid, vars, params, eqn, ts, state, and also t and step.Grids and time-steppers are generic and work for any problem of that particular dimension. State and Problem just gathers things together. Thus, to write a solver for a new physical problem you only need to prescribe params, vars, the coefficients of the linear part, LC, and function calcN!."
+},
+
+{
+    "location": "basics.html#Source-code-organization-1",
+    "page": "Code Basics",
+    "title": "Source code organization",
+    "category": "section",
+    "text": "The code is divided along conceptual lines into problem-agnostic and problem-specific components. Files that contain problem-agnostic parts of the code are stored in /src. Files in /src define the domain, \'AbstractTypes\' that supertype problem-specific types, and time-stepper types and routines. Problem-specific modules are stores in /src/physics.Here\'s an overview of the code structure:/src/\nFourierFlows.jl\nDefines supertyping AbstractParams, AbstractGrid, etc.\nDefines a Problem type to organize the grid, vars, params,   equation, and timestepper into a single structure.\nIncludes all sources files and physics files.\ntimesteppers.jl: defines modules and stepforward! routines for   various time-steppers. Current implemented time-steppers are:\nForward Euler\n3rd-order Adams-Bashforth (AB3)\n4th-order Runge-Kutta (RK4)\n4th-order Runge-Kutta Exponential Time Differencing (ETDRK4)\n4th-order Dual Runge-Kutta (DualRK4)\n4th-order Dual Runge-Kutta Exponential Time Differencing (DualETDRK4)\nFor each time-stepper exists also a \"filtered\" version that filters   out high-wavenumber spectral components of the solution. The Dual   time-steppers evolve a state variable that comprises both of real valued   and complex valued fields.\nphysics/\ntwodturb.jl: Defines a TwoDTurb module that provides a       solver for the two-dimensional vorticity equation.\nbarotropicqg.jl: Defines a BarotropicQG module that provides       several solvers for the barotropic QG model that permit beta,       topography, beta + topography, and forcing.\nkuramotosivashinsky.jl: Defines a KuramotoSivashinsky module that       solves the Kuramoto-Sivashinsky.\nverticallyfourierboussinesq.jl: Defines a VerticallyFourierBoussinesq module that       solves the two-mode truncation of the Fourier series thin-layer approximation to the hydrostatic Boussinesq equations.\nverticallycosinerboussinesq.jl: Defines a VerticallyCosineBoussinesq module that       solves the two-mode truncation of the Sin/Cos series thin-layer approximation to the hydrostatic Boussinesq equations.\ntraceradvdiff.jl: Defines a TracerAdvDiff module that       provides a solver for a two-dimensional and periodic tracer       field in a given 2D flow (u, w), which can be an arbitrary       function of x, z, and t."
+},
+
+{
+    "location": "basics.html#Basic-steps-for-solving-a-problem-1",
+    "page": "Code Basics",
+    "title": "Basic steps for solving a problem",
+    "category": "section",
+    "text": "To illustrate the basic steps for solving a problem consider the 1D Kuramoto-Sivashinsky equation for u(x t):partial_t u + partial_x^4 u + partial_x^2 u + upartial_x u = 0 which in Fourier base reads:partial_t widehatu = underbrace(- k_x^4 + k_x^2) widehatu_mathcalLwidehatu\n+ underbracewidehat -upartial_x u _mathcalN(widehatu) The steps to construct an AbstractProblem for the above are:Construct an AbstractGrid; for this problem we use the OneGrid.\nConstruct an AbstractParams; for this problem params is be empty as there are no parameters in the equation. (Note that e.g., the domain size Lx and the number of gridpoints nx belong to the grid.)\nConstruct an AbstractVars; for this problem vars includes u, partial_x u, upartial_x u and their Fourier transforms widehatu, widehatpartial_x u, widehatupartial_xu.\nConstruct the equations by prescribing coefficients for the linear part as an array LC and a function calcN! that computes mathcalN(widehatu).\nConstruct the time-stepper which includes function stepforward! that time-steps the solution.\nConstruct the state and gather everything as an AbstractProblem.The example script found in  examples/kuramotosivashinsky/trefethenexample.jl demonstrates the above steps needed to construct an AbstractProblem. The prob is constructed by calling prob = InitialValueProblem(nx=nx, Lx=Lx, dt=dt, stepper=\"ETDRK4\"). Looking into the  InitialValueProblem function we can see the above steps:function InitialValueProblem(;\n     nx = 256,\n     Lx = 2π,\n     dt = 0.01,\nstepper = \"RK4\"\n)\n\ng  = OneDGrid(nx, Lx)\npr = Params()\nvs = Vars(g)\neq = Equation(pr, g)\nts = FourierFlows.autoconstructtimestepper(stepper, dt, eq.LC, g)\n\nFourierFlows.Problem(g, vs, pr, eq, ts)\nend"
+},
+
+{
+    "location": "basics.html#Tutorials-1",
+    "page": "Code Basics",
+    "title": "Tutorials",
+    "category": "section",
+    "text": "Pages = [\n    \"modules/kuramotosivashinsky.md\",\n    \"modules/twodturb.md\",\n    \"modules/barotropicqg.md\",\n    \"modules/traceradvdiff.md\"\n        ]\nDepth = 1"
+},
+
+{
+    "location": "modules/kuramotosivashinsky.html#",
+    "page": "Kuramoto-Sivashinsky Module",
+    "title": "Kuramoto-Sivashinsky Module",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/kuramotosivashinsky.html#Kuramoto-Sivashinsky-Module-1",
+    "page": "Kuramoto-Sivashinsky Module",
+    "title": "Kuramoto-Sivashinsky Module",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "modules/kuramotosivashinsky.html#Basic-Equations-1",
+    "page": "Kuramoto-Sivashinsky Module",
+    "title": "Basic Equations",
+    "category": "section",
+    "text": "This module solves the Kuramoto-Sivashinsky equation for u(xt):partial_t u + partial_x^4 u + partial_x^2 u + upartial_x u = 0 "
+},
+
+{
+    "location": "modules/kuramotosivashinsky.html#Implementation-1",
+    "page": "Kuramoto-Sivashinsky Module",
+    "title": "Implementation",
+    "category": "section",
+    "text": "The equation is time-stepped forward in Fourier space:partial_t widehatu + k_x^4 widehatu - k_x^2 widehatu + widehat upartial_x u  = 0 Thus:mathcalL = k_x^2 - k_x^4 mathcalN(widehatu) = - mathrmFFT(u partial_x u) The function calcN! implements dealiasing to avoid energy piling up at the grid-scale."
 },
 
 {
@@ -137,6 +185,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/twodturb.html#Examples-1",
+    "page": "TwoDTurb Module",
+    "title": "Examples",
+    "category": "section",
+    "text": "examples/twodturb/McWilliams.jl: A script that simulates decaying two-dimensional turbulence reproducing the results of the paper by\nMcWilliams, J. C. (1984). The emergence of isolated coherent vortices in turbulent flow. J. Fluid Mech., 146, 21-43\nexamples/twodturb/IsotropicRingForcing.jl: A script that simulates stochastically forced two-dimensional turbulence. The forcing is temporally delta-corraleted and its spatial structure is isotropic with power in a narrow annulus of total radius kf in wavenumber space."
+},
+
+{
     "location": "modules/barotropicqg.html#",
     "page": "BarotropicQG Module",
     "title": "BarotropicQG Module",
@@ -166,6 +222,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Implementation",
     "category": "section",
     "text": "The equation is time-stepped forward in Fourier space:partial_t widehatzeta = - widehatJ(psi q) +betafracmathrmik_xk^2widehatzeta -left(mu\n+nu k^2n_nuright) widehatzeta  + widehatf In doing so the Jacobian is computed in the conservative form: J(fg) = partial_y  (partial_x f) g -partial_x (partial_y f) g.Thus:mathcalL = betafracmathrmik_xk^2 - mu - nu k^2n_nu mathcalN(widehatzeta) = - mathrmik_x mathrmFFT(u q)-\n	mathrmik_y mathrmFFT(upsilon q) "
+},
+
+{
+    "location": "modules/barotropicqg.html#Examples-1",
+    "page": "BarotropicQG Module",
+    "title": "Examples",
+    "category": "section",
+    "text": "examples/barotropicqg/decayingbetaturb.jl: An script that simulates decaying quasi-geostrophic flow on a beta-plane demonstrating zonation.\nexamples/barotropicqg/forcedbetaturb.jl: An script that simulates forced-dissipative quasi-geostrophic flow on a beta-plane demonstrating zonation. The forcing is temporally delta-corraleted and its spatial structure is isotropic with power in a narrow annulus of total radius kf in wavenumber space.\nexamples/barotropicqg/ACConelayer.jl: A script that simulates barotropic quasi-geostrophic flow above topography reproducing the results of the paper by\nConstantinou, N. C. (2018). A barotropic model of eddy saturation. J. Phys. Oceanogr., 48 (2), 397-411"
 },
 
 {
@@ -222,38 +286,6 @@ var documenterSearchIndex = {"docs": [
     "title": "Implementation",
     "category": "section",
     "text": "Coming soon."
-},
-
-{
-    "location": "modules/kuramotosivashinsky.html#",
-    "page": "Kuramoto-Sivashinsky Module",
-    "title": "Kuramoto-Sivashinsky Module",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "modules/kuramotosivashinsky.html#Kuramoto-Sivashinsky-Module-1",
-    "page": "Kuramoto-Sivashinsky Module",
-    "title": "Kuramoto-Sivashinsky Module",
-    "category": "section",
-    "text": ""
-},
-
-{
-    "location": "modules/kuramotosivashinsky.html#Basic-Equations-1",
-    "page": "Kuramoto-Sivashinsky Module",
-    "title": "Basic Equations",
-    "category": "section",
-    "text": "This module solves the Kuramoto-Sivashinsky equation for u(xt):partial_t u + partial_x^4 u + partial_x^2 u + upartial_x u = 0 "
-},
-
-{
-    "location": "modules/kuramotosivashinsky.html#Implementation-1",
-    "page": "Kuramoto-Sivashinsky Module",
-    "title": "Implementation",
-    "category": "section",
-    "text": "The equation is time-stepped forward in Fourier space:partial_t widehatu + k_x^4 widehatu - k_x^2 widehatu + widehat upartial_x u  = 0 Thus:mathcalL = k_x^2 - k_x^4 mathcalN(widehatu) = - mathrmFFT(u partial_x u) The function calcN! implements dealiasing to avoid energy piling up at the grid-scale."
 },
 
 {
