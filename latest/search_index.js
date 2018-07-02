@@ -65,6 +65,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Cite-1",
+    "page": "Home",
+    "title": "Cite",
+    "category": "section",
+    "text": "The code is citable via zenodo. Please cite as:Gregory L. Wagner & Navid C. Constantinou. (2018). FourierFlows/FourierFlows.jl: FourierFlows v0.1.1 (Version v0.1.1). Zenodo.  http://doi.org/10.5281/zenodo.1302136"
+},
+
+{
     "location": "basics.html#",
     "page": "Code Basics",
     "title": "Code Basics",
