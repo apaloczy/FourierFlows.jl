@@ -245,7 +245,15 @@ var documenterSearchIndex = {"docs": [
     "page": "TwoDTurb Module",
     "title": "Implementation",
     "category": "section",
-    "text": "The equation is time-stepped forward in Fourier space:partial_t widehatq = - widehatJ(psi q) -leftmu k^2n_mu\n+nu k^2n_nuright widehatq  + widehatf In doing so the Jacobian is computed in the conservative form: J(fg) = partial_y  (partial_x f) g -partial_x (partial_y f) g.Thus:mathcalL = -mu k^-2n_mu - nu k^2n_nu mathcalN(widehatq) = - mathrmik_x mathrmFFT(u q)-\n	mathrmik_y mathrmFFT(upsilon q) "
+    "text": "The equation is time-stepped forward in Fourier space:partial_t widehatq = - widehatJ(psi q) -left(mu k^2n_mu\n+nu k^2n_nuright) widehatq  + widehatf In doing so the Jacobian is computed in the conservative form: J(ab) = partial_y  (partial_x a) b -partial_x (partial_y a) b.Thus:mathcalL = -mu k^-2n_mu - nu k^2n_nu mathcalN(widehatq) = - mathrmik_x mathrmFFT(u q)-\n	mathrmik_y mathrmFFT(upsilon q) + widehatf "
+},
+
+{
+    "location": "modules/twodturb.html#AbstractTypes-and-Functions-1",
+    "page": "TwoDTurb Module",
+    "title": "AbstractTypes and Functions",
+    "category": "section",
+    "text": "ParamsFor the unforced case (f=0) parameters AbstractType is build with Params and it includes:nu:   Float; viscosity or hyperviscosity coefficient.\nnnu: Integer0; the order of viscosity n_nu. Case n_nu=1 give normal viscosity.\nmu: Float; bottom drag or hypoviscosity coefficient.\nnmu: Integerge 0; the order of hypodrag n_mu. Case n_mu=0 give plain linear drag mu.For the forced case (fne 0) parameters AbstractType is build with ForcedParams. It includes all parameters in Params and additionally:calcF!: Function that calculates the forcing widehatfVarsFor the unforced case (f=0) variables AbstractType is build with Vars and it includes:q: Array of Floats; relative vorticity.\nU: Array of Floats; x-velocity, u.\nV: Array of Floats; y-velocity, v.\nsol: Array of Complex; the solution, widehatq.\nqh: Array of Complex; the Fourier transform widehatq.\nUh: Array of Complex; the Fourier transform widehatu.\nVh: Array of Complex; the Fourier transform widehatv.For the forced case (fne 0) variables AbstractType is build with ForcedVars. It includes all variables in Vars and additionally:Fh: Array of Complex; the Fourier transform widehatf.\nprevsol: Array of Complex; the values of the solution sol at the previous time-step (useful for calculating the work done by the forcing).calcN! functionThe nonlinear term mathcalN(widehatq) is computed via functions:calcN_advection!: computes - widehatJ(psi q) and stores it in array N.function calcN_advection!(N, sol, t, s, v, p, g)\n  @. v.Uh =  im * g.l  * g.invKKrsq * sol\n  @. v.Vh = -im * g.kr * g.invKKrsq * sol\n  @. v.qh = sol\n\n  A_mul_B!(v.U, g.irfftplan, v.Uh)\n  A_mul_B!s(v.V, g.irfftplan, v.Vh)\n  A_mul_B!(v.q, g.irfftplan, v.qh)\n\n  @. v.U *= v.q # U*q\n  @. v.V *= v.q # V*q\n\n  A_mul_B!(v.Uh, g.rfftplan, v.U) # \\hat{U*q}\n  A_mul_B!(v.Vh, g.rfftplan, v.V) # \\hat{U*q}\n\n  @. N = -im*g.kr*v.Uh - im*g.l*v.Vh\n  nothing\nendcalcN_forced!: computes - widehatJ(psi q) via calcN_advection! and then adds to it the forcing widehatf computed via calcF! function. Also saves the solution widehatq of the previous time-step in array prevsol.function calcN_forced!(N, sol, t, s, v, p, g)\n  calcN_advection!(N, sol, t, s, v, p, g)\n  if t == s.t # not a substep\n    v.prevsol .= s.sol # used to compute budgets when forcing is stochastic\n    p.calcF!(v.Fh, sol, t, s, v, p, g)\n  end\n  @. N += v.Fh\n  nothing\nendupdatevars!: uses sol to compute q, u, v, widehatu, and widehatv and stores them into corresponding arrays of Vars/ForcedVars.\nupdatevars!: uses sol to compute q, u, v, widehatu, and widehatv and stores them into corresponding arrays of Vars/ForcedVars."
 },
 
 {
@@ -253,7 +261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "TwoDTurb Module",
     "title": "Examples",
     "category": "section",
-    "text": "examples/twodturb/McWilliams.jl: A script that simulates decaying two-dimensional turbulence reproducing the results of the paper by\nMcWilliams, J. C. (1984). The emergence of isolated coherent vortices in turbulent flow. J. Fluid Mech., 146, 21-43\nexamples/twodturb/IsotropicRingForcing.jl: A script that simulates stochastically forced two-dimensional turbulence. The forcing is temporally delta-corraleted and its spatial structure is isotropic with power in a narrow annulus of total radius kf in wavenumber space."
+    "text": "examples/twodturb/McWilliams.jl: A script that simulates decaying two-dimensional turbulence reproducing the results of the paper by\nMcWilliams, J. C. (1984). The emergence of isolated coherent vortices in turbulent flow. J. Fluid Mech., 146, 21-43.\nexamples/twodturb/IsotropicRingForcing.jl: A script that simulates stochastically forced two-dimensional turbulence. The forcing is temporally delta-corraleted and its spatial structure is isotropic with power in a narrow annulus of total radius k_f in wavenumber space."
 },
 
 {
@@ -293,7 +301,7 @@ var documenterSearchIndex = {"docs": [
     "page": "BarotropicQG Module",
     "title": "Examples",
     "category": "section",
-    "text": "examples/barotropicqg/decayingbetaturb.jl: An script that simulates decaying quasi-geostrophic flow on a beta-plane demonstrating zonation.\nexamples/barotropicqg/forcedbetaturb.jl: An script that simulates forced-dissipative quasi-geostrophic flow on a beta-plane demonstrating zonation. The forcing is temporally delta-corraleted and its spatial structure is isotropic with power in a narrow annulus of total radius kf in wavenumber space.\nexamples/barotropicqg/ACConelayer.jl: A script that simulates barotropic quasi-geostrophic flow above topography reproducing the results of the paper by\nConstantinou, N. C. (2018). A barotropic model of eddy saturation. J. Phys. Oceanogr., 48 (2), 397-411"
+    "text": "examples/barotropicqg/decayingbetaturb.jl: An script that simulates decaying quasi-geostrophic flow on a beta-plane demonstrating zonation.\nexamples/barotropicqg/forcedbetaturb.jl: An script that simulates forced-dissipative quasi-geostrophic flow on a beta-plane demonstrating zonation. The forcing is temporally delta-corraleted and its spatial structure is isotropic with power in a narrow annulus of total radius kf in wavenumber space.\nexamples/barotropicqg/ACConelayer.jl: A script that simulates barotropic quasi-geostrophic flow above topography reproducing the results of the paper by\nConstantinou, N. C. (2018). A barotropic model of eddy saturation. J. Phys. Oceanogr., 48 (2), 397-411."
 },
 
 {
