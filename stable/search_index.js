@@ -93,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Code Basics",
     "title": "Basic Notation",
     "category": "section",
-    "text": "The code solves partial differential equations of the general form:partial_t u = mathcalLu + mathcalN(u) We decompose the right hand side of the above in a linear part (mathcalLu) and a nonlinear part (mathcalN(u)). The time steppers treat the linear and nonlinear parts differently.Boundary conditions in all spatial dimensions are periodic. That allows us to use a Fourier base. The equation is time-stepped forward in Fourier space. That way u becomes an array with all Fourier coefficients of the solution. The coefficients for the linear operator mathcalL are stored in an array called LC. The term mathcalN(u) is computed for by calling the function calcN!.ODEs are special cases of the above. Thus the code also solves ODEs."
+    "text": "The code solves partial differential equations of the general form:partial_t u = mathcalLu + mathcalN(u) (Note: ODEs are special cases of the above. Thus the code also solves ODEs.)We decompose the right hand side of the above in a linear part (mathcalLu) and a nonlinear part (mathcalN(u)). The time steppers treat the linear and nonlinear parts differently.Boundary conditions in all spatial dimensions are periodic. That allows us to expand all variables using a Fourier decomposition. For example, a variable phi(x t) that depends in one spatial dimension is expanded as:phi(x t) = sum_k widehatphi(k t)e^mathrmi k x where wavenumbers k take the values tfrac2piL_x0pm 1pm 2dots. The equation is time-stepped forward in Fourier space. That way u becomes the array with all Fourier coefficients of the solution.The coefficients for the linear operator mathcalL are stored in an array called LC. The term mathcalN(u) is computed for by calling the function calcN!."
 },
 
 {
@@ -117,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Code Basics",
     "title": "Basic steps for solving a problem: step through an example script",
     "category": "section",
-    "text": "To illustrate the basic steps for solving a problem consider the 1D Kuramoto-Sivashinsky equation for u(x t):partial_t u + partial_x^4 u + partial_x^2 u + upartial_x u = 0 which in Fourier base reads:partial_t widehatu = underbrace(- k_x^4 + k_x^2) widehatu_mathcalLwidehatu\n+ underbracewidehat -upartial_x u _mathcalN(widehatu) The steps to construct an AbstractProblem for the above are:Construct an AbstractGrid; for this problem we use the OneGrid.\nConstruct an AbstractParams; for this problem params is be empty as there are no parameters in the equation. (Note that e.g., the domain size Lx and the number of gridpoints nx belong to the grid.)\nConstruct an AbstractVars; for this problem vars includes u, partial_x u, upartial_x u and their Fourier transforms widehatu, widehatpartial_x u, widehatupartial_xu.\nConstruct the equations by prescribing coefficients for the linear part as an array LC and a function calcN! that computes mathcalN(widehatu).\nConstruct the time-stepper which includes function stepforward! that time-steps the solution.\nConstruct the state and gather everything as an AbstractProblem.The example script found in  examples/kuramotosivashinsky/trefethenexample.jl demonstrates the above steps needed to construct an AbstractProblem. The prob is constructed by calling prob = InitialValueProblem(nx=nx, Lx=Lx, dt=dt, stepper=\"ETDRK4\"). Looking into the  InitialValueProblem function we can see the above steps:function InitialValueProblem(;\n     nx = 256,\n     Lx = 2π,\n     dt = 0.01,\nstepper = \"RK4\"\n)\n\ng  = OneDGrid(nx, Lx)\npr = Params()\nvs = Vars(g)\neq = Equation(pr, g)\nts = FourierFlows.autoconstructtimestepper(stepper, dt, eq.LC, g)\n\nFourierFlows.Problem(g, vs, pr, eq, ts)\nendThe OneDGrid function is called for the grid. Within grid the wavenumber array is constructed:i1 = 0:Int(nx/2)\ni2 = Int(-nx/2+1):-1\nk = Array{T}(2π/Lx*cat(1, i1, i2))\nkr = Array{T}(2π/Lx*cat(1, i1))For real-valued fields we use rfft and thus only positive wavenumbers are involved: array kr.Function Vars(g) initialize variables u, ux, and uux as real valued arrays of length nx and variables uh, uxh, and uuxh as complex valued arrays of length nkr = Int(nx/2+1) (the same length as kr). As a general convention variable names with h denote the Fourier transforms of the corresponding variable (h stands for \'hat\').The array LC is constructed by Equation functionfunction Equation(p, g)\n  LC = @. g.kr^2 - g.kr^4\n  FourierFlows.Equation(LC, calcN!)\nendAlso eq includes function calcN! which computes the nonlinear term mathcalN(widehatu):function calcN!(N, sol, t, s, v, p, g)\n  @. v.uh = sol\n  @. v.uxh = im*g.kr*sol\n  A_mul_B!(v.u, g.irfftplan, v.uh)\n  A_mul_B!(v.ux, g.irfftplan, v.uxh)\n  @. v.uux = v.u*v.ux\n  A_mul_B!(v.uuxh, g.rfftplan, v.uux)\n  @. N = -v.uuxh\n  dealias!(N, g)\n  nothing\nendThe time-stepper is constructed and stored as ts. Finally, all supertypes are gathered together as an AbstractProblem."
+    "text": "To illustrate the basic steps for solving a problem consider the 1D Kuramoto-Sivashinsky equation for u(x t):partial_t u + partial_x^4 u + partial_x^2 u + upartial_x u = 0 which in Fourier base reads:partial_t widehatu = underbrace(- k_x^4 + k_x^2) widehatu_mathcalLwidehatu\n+ underbracewidehat -upartial_x u _mathcalN(widehatu) The steps to construct an AbstractProblem for the above are:Construct an AbstractGrid; for this problem we use the OneGrid.\nConstruct an AbstractParams; for this problem params is be empty as there are no parameters in the equation. (Note that e.g., the domain size Lx and the number of gridpoints nx belong to the grid.)\nConstruct an AbstractVars; for this problem vars includes u, partial_x u, upartial_x u and their Fourier transforms widehatu, widehatpartial_x u, widehatupartial_xu.\nConstruct the equations by prescribing coefficients for the linear part as an array LC and a function calcN! that computes mathcalN(widehatu).\nConstruct the time-stepper which includes function stepforward! that time-steps the solution.\nConstruct the state and gather everything as an AbstractProblem.The example script found in  examples/kuramotosivashinsky/trefethenexample.jl demonstrates the above steps needed to construct an AbstractProblem. The prob is constructed by calling prob = InitialValueProblem(nx=nx, Lx=Lx, dt=dt, stepper=\"ETDRK4\"). Looking into the  InitialValueProblem function we can see the above steps:function InitialValueProblem(;\n     nx = 256,\n     Lx = 2π,\n     dt = 0.01,\nstepper = \"RK4\"\n)\n\ng  = OneDGrid(nx, Lx)\npr = Params()\nvs = Vars(g)\neq = Equation(pr, g)\nts = FourierFlows.autoconstructtimestepper(stepper, dt, eq.LC, g)\n\nFourierFlows.Problem(g, vs, pr, eq, ts)\nendThe OneDGrid function is called for the grid. Within grid the wavenumber array is constructed:i1 = 0:Int(nx/2)\ni2 = Int(-nx/2+1):-1\nk = Array{T}(2π/Lx*cat(1, i1, i2))\nkr = Array{T}(2π/Lx*cat(1, i1))For real-valued fields we use rfft and thus only positive wavenumbers are involved: array kr. E.g., for nx=8 and Lx=2π the wavenumber grids are: k = [0, 1, 2, 3, 4, -3, -2, -1] and kr = [0, 1, 2, 3, 4].The construction of the grids only works for even number of grid points. Moreover, since the code relies on the mathrmFFT algorithm, we suggest you use a power of 2 as the number of grid points, since then mathrmFFT is most efficient. Function Vars(g) initialize variables u, ux, and uux as real valued arrays of length nx and variables uh, uxh, and uuxh as complex valued arrays of length nkr = Int(nx/2+1) (the same length as kr). As a general convention variable names with h denote the Fourier transforms of the corresponding variable (h stands for \'hat\').The array LC is constructed by Equation functionfunction Equation(p, g)\n  LC = @. g.kr^2 - g.kr^4\n  FourierFlows.Equation(LC, calcN!)\nendAlso eq includes function calcN! which computes the nonlinear term mathcalN(widehatu):function calcN!(N, sol, t, s, v, p, g)\n  @. v.uh = sol\n  @. v.uxh = im*g.kr*sol\n  A_mul_B!(v.u, g.irfftplan, v.uh)\n  A_mul_B!(v.ux, g.irfftplan, v.uxh)\n  @. v.uux = v.u*v.ux\n  A_mul_B!(v.uuxh, g.rfftplan, v.uux)\n  @. N = -v.uuxh\n  dealias!(N, g)\n  nothing\nendThe time-stepper is constructed and stored as ts. Finally, all supertypes are gathered together as an AbstractProblem."
 },
 
 {
@@ -253,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "TwoDTurb Module",
     "title": "AbstractTypes and Functions",
     "category": "section",
-    "text": "ParamsFor the unforced case (f=0) parameters AbstractType is build with Params and it includes:nu:   Float; viscosity or hyperviscosity coefficient.\nnnu: Integer0; the order of viscosity n_nu. Case n_nu=1 give normal viscosity.\nmu: Float; bottom drag or hypoviscosity coefficient.\nnmu: Integerge 0; the order of hypodrag n_mu. Case n_mu=0 give plain linear drag mu.For the forced case (fne 0) parameters AbstractType is build with ForcedParams. It includes all parameters in Params and additionally:calcF!: Function that calculates the forcing widehatfVarsFor the unforced case (f=0) variables AbstractType is build with Vars and it includes:q: Array of Floats; relative vorticity.\nU: Array of Floats; x-velocity, u.\nV: Array of Floats; y-velocity, v.\nsol: Array of Complex; the solution, widehatq.\nqh: Array of Complex; the Fourier transform widehatq.\nUh: Array of Complex; the Fourier transform widehatu.\nVh: Array of Complex; the Fourier transform widehatv.For the forced case (fne 0) variables AbstractType is build with ForcedVars. It includes all variables in Vars and additionally:Fh: Array of Complex; the Fourier transform widehatf.\nprevsol: Array of Complex; the values of the solution sol at the previous time-step (useful for calculating the work done by the forcing).calcN! functionThe nonlinear term mathcalN(widehatq) is computed via functions:calcN_advection!: computes - widehatJ(psi q) and stores it in array N.function calcN_advection!(N, sol, t, s, v, p, g)\n  @. v.Uh =  im * g.l  * g.invKKrsq * sol\n  @. v.Vh = -im * g.kr * g.invKKrsq * sol\n  @. v.qh = sol\n\n  A_mul_B!(v.U, g.irfftplan, v.Uh)\n  A_mul_B!s(v.V, g.irfftplan, v.Vh)\n  A_mul_B!(v.q, g.irfftplan, v.qh)\n\n  @. v.U *= v.q # U*q\n  @. v.V *= v.q # V*q\n\n  A_mul_B!(v.Uh, g.rfftplan, v.U) # \\hat{U*q}\n  A_mul_B!(v.Vh, g.rfftplan, v.V) # \\hat{U*q}\n\n  @. N = -im*g.kr*v.Uh - im*g.l*v.Vh\n  nothing\nendcalcN_forced!: computes - widehatJ(psi q) via calcN_advection! and then adds to it the forcing widehatf computed via calcF! function. Also saves the solution widehatq of the previous time-step in array prevsol.function calcN_forced!(N, sol, t, s, v, p, g)\n  calcN_advection!(N, sol, t, s, v, p, g)\n  if t == s.t # not a substep\n    v.prevsol .= s.sol # used to compute budgets when forcing is stochastic\n    p.calcF!(v.Fh, sol, t, s, v, p, g)\n  end\n  @. N += v.Fh\n  nothing\nendupdatevars!: uses sol to compute q, u, v, widehatu, and widehatv and stores them into corresponding arrays of Vars/ForcedVars.\nupdatevars!: uses sol to compute q, u, v, widehatu, and widehatv and stores them into corresponding arrays of Vars/ForcedVars."
+    "text": "ParamsFor the unforced case (f=0) parameters AbstractType is build with Params and it includes:nu:   Float; viscosity or hyperviscosity coefficient.\nnnu: Integer0; the order of viscosity n_nu. Case n_nu=1 give normal viscosity.\nmu: Float; bottom drag or hypoviscosity coefficient.\nnmu: Integerge 0; the order of hypodrag n_mu. Case n_mu=0 give plain linear drag mu.For the forced case (fne 0) parameters AbstractType is build with ForcedParams. It includes all parameters in Params and additionally:calcF!: Function that calculates the forcing widehatfVarsFor the unforced case (f=0) variables AbstractType is build with Vars and it includes:q: Array of Floats; relative vorticity.\nU: Array of Floats; x-velocity, u.\nV: Array of Floats; y-velocity, v.\nsol: Array of Complex; the solution, widehatq.\nqh: Array of Complex; the Fourier transform widehatq.\nUh: Array of Complex; the Fourier transform widehatu.\nVh: Array of Complex; the Fourier transform widehatv.For the forced case (fne 0) variables AbstractType is build with ForcedVars. It includes all variables in Vars and additionally:Fh: Array of Complex; the Fourier transform widehatf.\nprevsol: Array of Complex; the values of the solution sol at the previous time-step (useful for calculating the work done by the forcing).calcN! functionThe nonlinear term mathcalN(widehatq) is computed via functions:calcN_advection!: computes - widehatJ(psi q) and stores it in array N.function calcN_advection!(N, sol, t, s, v, p, g)\n  @. v.Uh =  im * g.l  * g.invKKrsq * sol\n  @. v.Vh = -im * g.kr * g.invKKrsq * sol\n  @. v.qh = sol\n\n  A_mul_B!(v.U, g.irfftplan, v.Uh)\n  A_mul_B!s(v.V, g.irfftplan, v.Vh)\n  A_mul_B!(v.q, g.irfftplan, v.qh)\n\n  @. v.U *= v.q # U*q\n  @. v.V *= v.q # V*q\n\n  A_mul_B!(v.Uh, g.rfftplan, v.U) # \\hat{U*q}\n  A_mul_B!(v.Vh, g.rfftplan, v.V) # \\hat{U*q}\n\n  @. N = -im*g.kr*v.Uh - im*g.l*v.Vh\n  nothing\nendcalcN_forced!: computes - widehatJ(psi q) via calcN_advection! and then adds to it the forcing widehatf computed via calcF! function. Also saves the solution widehatq of the previous time-step in array prevsol.function calcN_forced!(N, sol, t, s, v, p, g)\n  calcN_advection!(N, sol, t, s, v, p, g)\n  if t == s.t # not a substep\n    v.prevsol .= s.sol # used to compute budgets when forcing is stochastic\n    p.calcF!(v.Fh, sol, t, s, v, p, g)\n  end\n  @. N += v.Fh\n  nothing\nendupdatevars!: uses sol to compute q, u, v, widehatu, and widehatv and stores them into corresponding arrays of Vars/ForcedVars."
 },
 
 {
@@ -302,6 +302,38 @@ var documenterSearchIndex = {"docs": [
     "title": "Examples",
     "category": "section",
     "text": "examples/barotropicqg/decayingbetaturb.jl: An script that simulates decaying quasi-geostrophic flow on a beta-plane demonstrating zonation.\nexamples/barotropicqg/forcedbetaturb.jl: An script that simulates forced-dissipative quasi-geostrophic flow on a beta-plane demonstrating zonation. The forcing is temporally delta-corraleted and its spatial structure is isotropic with power in a narrow annulus of total radius kf in wavenumber space.\nexamples/barotropicqg/ACConelayer.jl: A script that simulates barotropic quasi-geostrophic flow above topography reproducing the results of the paper by\nConstantinou, N. C. (2018). A barotropic model of eddy saturation. J. Phys. Oceanogr., 48 (2), 397-411."
+},
+
+{
+    "location": "modules/traceradvdiff.html#",
+    "page": "TracerAdvDiff Module",
+    "title": "TracerAdvDiff Module",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/traceradvdiff.html#TracerAdvDiff-Module-1",
+    "page": "TracerAdvDiff Module",
+    "title": "TracerAdvDiff Module",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "modules/traceradvdiff.html#Basic-Equations-1",
+    "page": "TracerAdvDiff Module",
+    "title": "Basic Equations",
+    "category": "section",
+    "text": "This module solves the advection diffusion equation for a passive tracer concentration c(x y t) in two-dimensions:partial_t c + boldsymbolu boldsymbolcdot boldsymbolnabla c = underbraceeta partial_x^2 c + kappa partial_y^2 c_textrmdiffusivity + underbracekappa_h (-1)^n_h nabla^2n_hc_textrmhyper-diffusivity where boldsymbolu = (uv) is the two-dimensional advecting flow, eta the x-diffusivity and kappa is the y-diffusivity. If eta is not defined then the code uses isotropic diffusivity, i.e., eta partial_x^2 c + kappa partial_y^2 cmapstokappanabla^2. The advecting flow could be either compressible or incompressible. "
+},
+
+{
+    "location": "modules/traceradvdiff.html#Implementation-1",
+    "page": "TracerAdvDiff Module",
+    "title": "Implementation",
+    "category": "section",
+    "text": "The equation is time-stepped forward in Fourier space:partial_t widehatc = - widehatboldsymbolu boldsymbolcdot boldsymbolnabla c - left (eta k_x^2 + kappa k_y^2) +kappa_h k^2nu_h rightwidehatc Thus:beginalign*\nmathcalL = -eta k_x^2 - kappa k_y^2 - kappa_h k^2nu_h  \nmathcalN(widehatc) = - mathrmFFT(u partial_x c + upsilon partial_y c) \nendalign*"
 },
 
 {
@@ -361,139 +393,539 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/traceradvdiff.html#",
-    "page": "TracerAdvDiff Module",
-    "title": "TracerAdvDiff Module",
+    "location": "man/types.html#",
+    "page": "Private types",
+    "title": "Private types",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "modules/traceradvdiff.html#TracerAdvDiff-Module-1",
-    "page": "TracerAdvDiff Module",
-    "title": "TracerAdvDiff Module",
+    "location": "man/types.html#Private-types-1",
+    "page": "Private types",
+    "title": "Private types",
     "category": "section",
     "text": ""
 },
 
 {
-    "location": "modules/traceradvdiff.html#Basic-Equations-1",
-    "page": "TracerAdvDiff Module",
-    "title": "Basic Equations",
-    "category": "section",
-    "text": "This module solves the advection diffusion equation for a passive tracer concentration c(xyt) in two-dimensions:partial_t c + boldsymbolu boldsymbolcdot boldsymbolnabla c = kappa nabla^2 c where mathbfu = (uv) is the two-dimensional advecting velocity and kappa is the diffusivity."
-},
-
-{
-    "location": "modules/traceradvdiff.html#Implementation-1",
-    "page": "TracerAdvDiff Module",
-    "title": "Implementation",
-    "category": "section",
-    "text": "Coming soon."
-},
-
-{
-    "location": "man/docstrings.html#",
-    "page": "Functions exported from FourierFlows:",
-    "title": "Functions exported from FourierFlows:",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "man/docstrings.html#Base.resize!-Tuple{FourierFlows.AbstractDiagnostic,Int64}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "Base.resize!",
-    "category": "method",
-    "text": "resize!(diag, newnum)\n\nResize the Diagnostic data and time arrays to length newnum.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.increment!-Tuple{FourierFlows.AbstractDiagnostic}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.increment!",
-    "category": "method",
-    "text": "increment!(diag)\nincrement!(diags)\n\nIncrement the Diagnostic diag, or an array of Diagnostics diags.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.savediagnostic-Tuple{FourierFlows.AbstractDiagnostic,String,String}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.savediagnostic",
-    "category": "method",
-    "text": "savediagnostic(diag, diagname)\n\nSave diagnostics to file, labeled by the string diagname.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.saveoutput-Tuple{FourierFlows.Output}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.saveoutput",
-    "category": "method",
-    "text": "saveoutput(out)\n\nSave current output fields for file in out.filename.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.saveproblem-Tuple{FourierFlows.AbstractProblem,String}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.saveproblem",
-    "category": "method",
-    "text": "saveproblem(prob, filename)\n\nSave certain aspects of a problem timestepper, grid, and params. Functions that are fields in params are not saved.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,AbstractArray,Any}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.stepforward!",
-    "category": "method",
-    "text": "stepforward!(prob, diags, nsteps)\n\nStep forward prob for nsteps, incrementing diagnostics in the array diags along the way.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,Any}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.stepforward!",
-    "category": "method",
-    "text": "stepforward!(prob, nsteps)\n\nStep forward prob for nsteps.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.stepforward!",
-    "category": "method",
-    "text": "stepforward!(prob)\n\nStep forward the Problem prob for one timestep.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.update!-Tuple{FourierFlows.AbstractDiagnostic}",
-    "page": "Functions exported from FourierFlows:",
-    "title": "FourierFlows.update!",
-    "category": "method",
-    "text": "update!(diag)\n\nUpdate diag with its current value.\n\n\n\n"
-},
-
-{
-    "location": "man/docstrings.html#Functions-exported-from-FourierFlows:-1",
-    "page": "Functions exported from FourierFlows:",
-    "title": "Functions exported from FourierFlows:",
-    "category": "section",
-    "text": "Modules = [FourierFlows]\nPrivate = false\nOrder = [:function]"
-},
-
-{
-    "location": "man/docstrings.html#FourierFlows.ZeroDGrid",
-    "page": "Functions exported from FourierFlows:",
+    "location": "man/types.html#FourierFlows.ZeroDGrid",
+    "page": "Private types",
     "title": "FourierFlows.ZeroDGrid",
     "category": "type",
     "text": "ZeroDGrid()\n\nConstructs a placeholder grid object for \"0D\" problems (in other words, systems of ODEs).\n\n\n\n"
 },
 
 {
-    "location": "man/docstrings.html#Private-types-in-module-FourierFlows:-1",
-    "page": "Functions exported from FourierFlows:",
+    "location": "man/types.html#Private-types-in-module-FourierFlows:-1",
+    "page": "Private types",
     "title": "Private types in module FourierFlows:",
     "category": "section",
     "text": "Modules = [FourierFlows]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/types.html#FourierFlows.KuramotoSivashinsky.Vars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.KuramotoSivashinsky.Vars",
+    "category": "method",
+    "text": "Returns the Vars object for Kuramoto-Sivashinsky.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#Private-types-in-module-KuramotoSivashinsky:-1",
+    "page": "Private types",
+    "title": "Private types in module KuramotoSivashinsky:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.KuramotoSivashinsky]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TwoDTurb.ForcedParams",
+    "page": "Private types",
+    "title": "FourierFlows.TwoDTurb.ForcedParams",
+    "category": "type",
+    "text": "ForcedParams(nu, nnu, mu, nmu, calcF!)\n\nReturns the params for forced two-dimensional turbulence.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TwoDTurb.ForcedVars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.TwoDTurb.ForcedVars",
+    "category": "method",
+    "text": "ForcedVars(g)\n\nReturns the vars for forced two-dimensional turbulence with grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TwoDTurb.Params",
+    "page": "Private types",
+    "title": "FourierFlows.TwoDTurb.Params",
+    "category": "type",
+    "text": "Params(nu, nnu, mu, nmu)\n\nReturns the params for unforced two-dimensional turbulence.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TwoDTurb.Vars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.TwoDTurb.Vars",
+    "category": "method",
+    "text": "Vars(g)\n\nReturns the vars for unforced two-dimensional turbulence with grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#Private-types-in-module-TwoDTurb:-1",
+    "page": "Private types",
+    "title": "Private types in module TwoDTurb:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.TwoDTurb]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/types.html#FourierFlows.BarotropicQG.ForcedParams",
+    "page": "Private types",
+    "title": "FourierFlows.BarotropicQG.ForcedParams",
+    "category": "type",
+    "text": "ForcedParams(g::TwoDGrid, f0, beta, FU, eta, mu, nu, nnu)\n\nReturns the params for an forced two-dimensional barotropic QG problem.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.BarotropicQG.ForcedParams-Tuple{FourierFlows.TwoDGrid,Any,Any,Function,Any,Any,Any,Function,Function}",
+    "page": "Private types",
+    "title": "FourierFlows.BarotropicQG.ForcedParams",
+    "category": "method",
+    "text": "ForcedParams(g::TwoDGrid, f0, beta, eta::Function, mu, nu, nnu, calcFU, calcFq)\n\nConstructor for Params that accepts a generating function for the topographic PV.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.BarotropicQG.ForcedVars",
+    "page": "Private types",
+    "title": "FourierFlows.BarotropicQG.ForcedVars",
+    "category": "type",
+    "text": "ForcedVars(g)\n\nReturns the vars for forced two-dimensional barotropic QG problem with grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.BarotropicQG.Params",
+    "page": "Private types",
+    "title": "FourierFlows.BarotropicQG.Params",
+    "category": "type",
+    "text": "Params(g::TwoDGrid, f0, beta, FU, eta, mu, nu, nnu)\n\nReturns the params for an unforced two-dimensional barotropic QG problem.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.BarotropicQG.Params-Tuple{FourierFlows.TwoDGrid,Any,Any,Function,Any,Any,Any}",
+    "page": "Private types",
+    "title": "FourierFlows.BarotropicQG.Params",
+    "category": "method",
+    "text": "Params(g::TwoDGrid, f0, beta, eta::Function, mu, nu, nnu)\n\nConstructor for Params that accepts a generating function for the topographic PV.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.BarotropicQG.Vars",
+    "page": "Private types",
+    "title": "FourierFlows.BarotropicQG.Vars",
+    "category": "type",
+    "text": "Vars(g)\n\nReturns the vars for unforced two-dimensional barotropic QG problem with grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#Private-types-in-module-BarotropicQG:-1",
+    "page": "Private types",
+    "title": "Private types in module BarotropicQG:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.BarotropicQG]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TracerAdvDiff.ConstDiffParams",
+    "page": "Private types",
+    "title": "FourierFlows.TracerAdvDiff.ConstDiffParams",
+    "category": "type",
+    "text": "ConstDiffParams(eta, kap, kaph, nkaph, u, v)\nConstDiffParams(eta, kap, u, v)\n\nReturns the params for constant diffusivity problem with time-varying flow.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TracerAdvDiff.ConstDiffSteadyFlowParams",
+    "page": "Private types",
+    "title": "FourierFlows.TracerAdvDiff.ConstDiffSteadyFlowParams",
+    "category": "type",
+    "text": "ConstDiffSteadyFlowParams(eta, kap, kaph, nkaph, u, v, g)\nConstDiffSteadyFlowParams(eta, kap, u, v, g)\n\nReturns the params for constant diffusivity problem with time-steady flow.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TracerAdvDiff.Vars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.TracerAdvDiff.Vars",
+    "category": "method",
+    "text": "Vars(g)\n\nReturns the vars for constant diffusivity problem on grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#Private-types-in-module-TracerAdvDiff:-1",
+    "page": "Private types",
+    "title": "Private types in module TracerAdvDiff:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.TracerAdvDiff]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/types.html#FourierFlows.VerticallyFourierBoussinesq.Params",
+    "page": "Private types",
+    "title": "FourierFlows.VerticallyFourierBoussinesq.Params",
+    "category": "type",
+    "text": "Params(nu0, nnu0, nu1, nnu1, f, N, m, Ub, Vb)\n\nConstruct parameters for the Two-Fourier-mode Boussinesq problem. Suffix 0 refers to zeroth mode; 1 to first mode. f, N, m are Coriolis frequency,  buoyancy frequency, and vertical wavenumber of the first mode, respectively. The optional constant background velocity (Ub,Vb) is set to zero by default. The viscosity is applied only to the first-mode horizontal velocities.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#Private-types-in-module-VerticallyFourierBoussinesq:-1",
+    "page": "Private types",
+    "title": "Private types in module VerticallyFourierBoussinesq:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.VerticallyFourierBoussinesq]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/types.html#FourierFlows.VerticallyCosineBoussinesq.ForcedVars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.ForcedVars",
+    "category": "method",
+    "text": "ForcedVars(g)\n\nReturns the vars for forced two-vertical-cosine-mode Boussinesq dynamics on the grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.VerticallyCosineBoussinesq.Params",
+    "page": "Private types",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.Params",
+    "category": "type",
+    "text": "Params(nu0, nnu0, nu1, nnu1, mu0, nmu0, mu1, nmu1, f, N, m; Ub=0, Vb=0)\n\nConstruct parameters for the Two-Fourier-mode Boussinesq problem. Suffix 0 refers to zeroth mode; 1 to first mode. f, N, m are Coriolis frequency, buoyancy frequency, and vertical wavenumber of the first mode, respectively. The optional constant background velocity (Ub, Vb) is set to zero by default. The viscosity is applied only to the first-mode horizontal velocities.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.VerticallyCosineBoussinesq.TracerForcedVars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.TracerForcedVars",
+    "category": "method",
+    "text": "TracerForcedVars(g)\n\nReturns the vars for forced two-vertical-cosine-mode Boussinesq dynamics on the grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.VerticallyCosineBoussinesq.Vars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.Vars",
+    "category": "method",
+    "text": "Vars(g)\n\nReturns the vars for unforced two-vertical-cosine-mode Boussinesq dynamics on the grid g.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#Private-types-in-module-VerticallyCosineBoussinesq:-1",
+    "page": "Private types",
+    "title": "Private types in module VerticallyCosineBoussinesq:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.VerticallyCosineBoussinesq]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/functions.html#",
+    "page": "Functions",
+    "title": "Functions",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "man/functions.html#Functions-1",
+    "page": "Functions",
+    "title": "Functions",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "man/functions.html#Base.resize!-Tuple{FourierFlows.AbstractDiagnostic,Int64}",
+    "page": "Functions",
+    "title": "Base.resize!",
+    "category": "method",
+    "text": "resize!(diag, newnum)\n\nResize the Diagnostic data and time arrays to length newnum.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.increment!-Tuple{FourierFlows.AbstractDiagnostic}",
+    "page": "Functions",
+    "title": "FourierFlows.increment!",
+    "category": "method",
+    "text": "increment!(diag)\nincrement!(diags)\n\nIncrement the Diagnostic diag, or an array of Diagnostics diags.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.savediagnostic-Tuple{FourierFlows.AbstractDiagnostic,String,String}",
+    "page": "Functions",
+    "title": "FourierFlows.savediagnostic",
+    "category": "method",
+    "text": "savediagnostic(diag, diagname)\n\nSave diagnostics to file, labeled by the string diagname.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.saveoutput-Tuple{FourierFlows.Output}",
+    "page": "Functions",
+    "title": "FourierFlows.saveoutput",
+    "category": "method",
+    "text": "saveoutput(out)\n\nSave current output fields for file in out.filename.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.saveproblem-Tuple{FourierFlows.AbstractProblem,String}",
+    "page": "Functions",
+    "title": "FourierFlows.saveproblem",
+    "category": "method",
+    "text": "saveproblem(prob, filename)\n\nSave certain aspects of a problem timestepper, grid, and params. Functions that are fields in params are not saved.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,AbstractArray,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.stepforward!",
+    "category": "method",
+    "text": "stepforward!(prob, diags, nsteps)\n\nStep forward prob for nsteps, incrementing diagnostics in the array diags along the way.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.stepforward!",
+    "category": "method",
+    "text": "stepforward!(prob, nsteps)\n\nStep forward prob for nsteps.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.stepforward!-Tuple{FourierFlows.Problem}",
+    "page": "Functions",
+    "title": "FourierFlows.stepforward!",
+    "category": "method",
+    "text": "stepforward!(prob)\n\nStep forward the Problem prob for one timestep.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.update!-Tuple{FourierFlows.AbstractDiagnostic}",
+    "page": "Functions",
+    "title": "FourierFlows.update!",
+    "category": "method",
+    "text": "update!(diag)\n\nUpdate diag with its current value.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#Functions-exported-from-FourierFlows:-1",
+    "page": "Functions",
+    "title": "Functions exported from FourierFlows:",
+    "category": "section",
+    "text": "Modules = [FourierFlows]\nPrivate = false\nOrder = [:function]"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.KuramotoSivashinsky.InitialValueProblem-Tuple{}",
+    "page": "Functions",
+    "title": "FourierFlows.KuramotoSivashinsky.InitialValueProblem",
+    "category": "method",
+    "text": "InitialValueProblem(; parameters...)\n\nConstruct an initial-value Kuramoto-Sivashinky problem that solves the equation\n\n∂t u + ∂ₓ⁴u + ∂ₓ²u + u ∂ₓu = 0.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.KuramotoSivashinsky.set_u!-NTuple{4,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.KuramotoSivashinsky.set_u!",
+    "category": "method",
+    "text": "set_u!(prob, u)\nset_u!(s, v, g, u)\n\nSet the solution prob.state.sol as the transform of u and update variables.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.KuramotoSivashinsky.updatevars!-Tuple{Any,Any,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.KuramotoSivashinsky.updatevars!",
+    "category": "method",
+    "text": "updatevars!(v, s, g)\n\nUpdate the vars in v on the grid g with the solution in s.sol.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#Functions-exported-from-KuramotoSivashinsky:-1",
+    "page": "Functions",
+    "title": "Functions exported from KuramotoSivashinsky:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.KuramotoSivashinsky]\nPrivate = false\nOrder = [:function]"
+},
+
+{
+    "location": "man/functions.html#Functions-exported-from-TwoDTurb:-1",
+    "page": "Functions",
+    "title": "Functions exported from TwoDTurb:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.TwoDTurb]\nPrivate = false\nOrder = [:function]"
+},
+
+{
+    "location": "man/functions.html#Functions-exported-from-BarotropicQG:-1",
+    "page": "Functions",
+    "title": "Functions exported from BarotropicQG:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.BarotropicQG]\nPrivate = false\nOrder = [:function]"
+},
+
+{
+    "location": "man/functions.html#Functions-exported-from-TracerAdvDiff:-1",
+    "page": "Functions",
+    "title": "Functions exported from TracerAdvDiff:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.TracerAdvDiff]\nPrivate = false\nOrder = [:function]"
+},
+
+{
+    "location": "man/functions.html#Functions-exported-from-VerticallyFourierBoussinesq:-1",
+    "page": "Functions",
+    "title": "Functions exported from VerticallyFourierBoussinesq:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.VerticallyFourierBoussinesq]\nPrivate = false\nOrder = [:function]"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode0apv-NTuple{4,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode0apv",
+    "category": "method",
+    "text": "mode0apv(prob)\n\nReturns the barotropic available potential vorticity.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode0apv-NTuple{7,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode0apv",
+    "category": "method",
+    "text": "mode0apv(uh, vh, ph, Zh, m, N, g)\n\nReturns the barotropic available potential vorticity.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode0dissipation-NTuple{4,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode0dissipation",
+    "category": "method",
+    "text": "mode0dissipation(prob)\n\nReturns the domain-averaged barotropic dissipation rate. nnu0 must be >= 1.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode0drag-NTuple{4,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode0drag",
+    "category": "method",
+    "text": "mode0drag(prob)\n\nReturns the extraction of domain-averaged barotropic energy by drag μ.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode0energy-Tuple{Any,Any,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode0energy",
+    "category": "method",
+    "text": "mode0energy(prob)\n\nReturns the domain-averaged energy in the zeroth mode.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode0enstrophy-Tuple{Any,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode0enstrophy",
+    "category": "method",
+    "text": "mode0enstrophy(prob)\n\nReturns the domain-averaged enstrophy in the Fourier-transformed vorticity solution s.sol.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode1dissipation-NTuple{4,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode1dissipation",
+    "category": "method",
+    "text": "mode1dissipation(prob)\n\nReturns the domain-averaged kinetic energy dissipation of the first mode by horizontal viscosity.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode1drag-NTuple{4,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode1drag",
+    "category": "method",
+    "text": "mode1drag(prob)\n\nReturns the domain-averaged kinetic energy dissipation of the first mode by horizontal viscosity.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode1energy-Tuple{Any,Any,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode1energy",
+    "category": "method",
+    "text": "mode1energy(prob)\n\nReturns the domain-averaged total energy in the first mode.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode1ke-Tuple{Any,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode1ke",
+    "category": "method",
+    "text": "mode1ke(prob)\n\nReturns the domain-averaged kinetic energy in the first mode.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.mode1pe-Tuple{Any,Any,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.mode1pe",
+    "category": "method",
+    "text": "mode1pe(prob)\n\nReturns the domain-averaged potential energy in the first mode.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.set_C!-NTuple{5,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.set_C!",
+    "category": "method",
+    "text": "set_C!(prob, C)\n\nSet zeroth mode tracer concentration and update vars.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.set_Z!-NTuple{5,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.set_Z!",
+    "category": "method",
+    "text": "set_Z!(prob, Z)\n\nSet zeroth mode vorticity and update vars.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.set_planewave!",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.set_planewave!",
+    "category": "function",
+    "text": "set_planewave!(prob, u₀, κ, θ=0)\n\nSet a plane wave solution with initial speed u₀, non-dimensional wave number κ, and angle θ with the horizontal. The non-dimensional wavenumber vector is (k, l) = (κ cos θ, κ sin θ), is normalized by 2π/Lx, and is rounded to the nearest integer.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.set_uvp!-NTuple{7,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.set_uvp!",
+    "category": "method",
+    "text": "set_uvp!(prob)\n\nSet first mode u, v, and p and update vars.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.totalenergy-NTuple{4,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.totalenergy",
+    "category": "method",
+    "text": "totalenergy(prob)\n\nReturns the total energy projected onto the zeroth mode.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#FourierFlows.VerticallyCosineBoussinesq.updatevars!-NTuple{5,Any}",
+    "page": "Functions",
+    "title": "FourierFlows.VerticallyCosineBoussinesq.updatevars!",
+    "category": "method",
+    "text": "updatevars!(prob)\n\nUpdate variables to correspond to the solution in s.sol or prob.state.sol.\n\n\n\n"
+},
+
+{
+    "location": "man/functions.html#Functions-exported-from-VerticallyCosineBoussinesq:-1",
+    "page": "Functions",
+    "title": "Functions exported from VerticallyCosineBoussinesq:",
+    "category": "section",
+    "text": "Modules = [FourierFlows.VerticallyCosineBoussinesq]\nPrivate = false\nOrder = [:function]"
 },
 
 ]}
