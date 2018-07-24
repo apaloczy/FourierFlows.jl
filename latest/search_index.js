@@ -325,7 +325,7 @@ var documenterSearchIndex = {"docs": [
     "page": "TracerAdvDiff Module",
     "title": "Basic Equations",
     "category": "section",
-    "text": "This module solves the advection diffusion equation for a passive tracer concentration c(xyt) in two-dimensions:partial_t c + boldsymbolu boldsymbolcdot boldsymbolnabla c = kappa nabla^2 c where mathbfu = (uv) is the two-dimensional advecting velocity and kappa is the diffusivity."
+    "text": "This module solves the advection diffusion equation for a passive tracer concentration c(x y t) in two-dimensions:partial_t c + boldsymbolu boldsymbolcdot boldsymbolnabla c = underbraceeta partial_x^2 c + kappa partial_y^2 c_textrmdiffusivity + underbracekappa_h (-1)^n_h nabla^2n_hc_textrmhyper-diffusivity where boldsymbolu = (uv) is the two-dimensional advecting flow, eta the x-diffusivity and kappa is the y-diffusivity. If eta is not defined then the code uses isotropic diffusivity, i.e., eta partial_x^2 c + kappa partial_y^2 cmapstokappanabla^2. The advecting flow could be either compressible or incompressible. "
 },
 
 {
@@ -333,7 +333,7 @@ var documenterSearchIndex = {"docs": [
     "page": "TracerAdvDiff Module",
     "title": "Implementation",
     "category": "section",
-    "text": "Coming soon."
+    "text": "The equation is time-stepped forward in Fourier space:partial_t widehatc = - widehatboldsymbolu boldsymbolcdot boldsymbolnabla c - left (eta k_x^2 + kappa k_y^2) +kappa_h k^2nu_h rightwidehatc Thus:beginalign*\nmathcalL = -eta k_x^2 - kappa k_y^2 - kappa_h k^2nu_h  \nmathcalN(widehatc) = - mathrmFFT(u partial_x c + upsilon partial_y c) \nendalign*"
 },
 
 {
@@ -534,6 +534,30 @@ var documenterSearchIndex = {"docs": [
     "title": "Private types in module BarotropicQG:",
     "category": "section",
     "text": "Modules = [FourierFlows.BarotropicQG]\nPublic = false\nOrder = [:type]"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TracerAdvDiff.ConstDiffParams",
+    "page": "Private types",
+    "title": "FourierFlows.TracerAdvDiff.ConstDiffParams",
+    "category": "type",
+    "text": "ConstDiffParams(eta, kap, kaph, nkaph, u, v)\nConstDiffParams(eta, kap, u, v)\n\nReturns the params for constant diffusivity problem with time-varying flow.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TracerAdvDiff.ConstDiffSteadyFlowParams",
+    "page": "Private types",
+    "title": "FourierFlows.TracerAdvDiff.ConstDiffSteadyFlowParams",
+    "category": "type",
+    "text": "ConstDiffSteadyFlowParams(eta, kap, kaph, nkaph, u, v, g)\nConstDiffSteadyFlowParams(eta, kap, u, v, g)\n\nReturns the params for constant diffusivity problem with time-steady flow.\n\n\n\n"
+},
+
+{
+    "location": "man/types.html#FourierFlows.TracerAdvDiff.Vars-Tuple{Any}",
+    "page": "Private types",
+    "title": "FourierFlows.TracerAdvDiff.Vars",
+    "category": "method",
+    "text": "Vars(g)\n\nReturns the vars for constant diffusivity problem on grid g.\n\n\n\n"
 },
 
 {
@@ -742,38 +766,6 @@ var documenterSearchIndex = {"docs": [
     "title": "Functions exported from BarotropicQG:",
     "category": "section",
     "text": "Modules = [FourierFlows.BarotropicQG]\nPrivate = false\nOrder = [:function]"
-},
-
-{
-    "location": "man/functions.html#FourierFlows.TracerAdvDiff.Equation-Tuple{FourierFlows.TracerAdvDiff.ConstDiffParams,FourierFlows.TwoDGrid}",
-    "page": "Functions",
-    "title": "FourierFlows.TracerAdvDiff.Equation",
-    "category": "method",
-    "text": "Initialize an equation with constant diffusivity problem parameters p and on a grid g. \n\n\n\n"
-},
-
-{
-    "location": "man/functions.html#FourierFlows.TracerAdvDiff.set_c!-Tuple{FourierFlows.State,FourierFlows.AbstractVars,FourierFlows.TwoDGrid,Array{Float64,2}}",
-    "page": "Functions",
-    "title": "FourierFlows.TracerAdvDiff.set_c!",
-    "category": "method",
-    "text": "Set the concentration field of the model with an array. \n\n\n\n"
-},
-
-{
-    "location": "man/functions.html#FourierFlows.TracerAdvDiff.set_c!-Tuple{FourierFlows.State,FourierFlows.AbstractVars,FourierFlows.TwoDGrid,Function}",
-    "page": "Functions",
-    "title": "FourierFlows.TracerAdvDiff.set_c!",
-    "category": "method",
-    "text": "Set the concentration field of the model with a function. \n\n\n\n"
-},
-
-{
-    "location": "man/functions.html#FourierFlows.TracerAdvDiff.updatevars!-Tuple{FourierFlows.State,FourierFlows.AbstractVars,FourierFlows.TwoDGrid}",
-    "page": "Functions",
-    "title": "FourierFlows.TracerAdvDiff.updatevars!",
-    "category": "method",
-    "text": "Update state variables. \n\n\n\n"
 },
 
 {
