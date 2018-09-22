@@ -1,8 +1,3 @@
-using Interpolations
-import SpecialFunctions
-
-export @createarrays
-
 """
     cxeltype(a)
 

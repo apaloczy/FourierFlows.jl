@@ -1,8 +1,5 @@
 module FourierFlows
 
-using Requires, FFTW, Statistics
-import LinearAlgebra: mul!, ldiv!
-
 export 
   AbstractGrid,
   AbstractParams,
@@ -12,10 +9,61 @@ export
   AbstractState,
   AbstractProblem,
 
+  Equation,
+  DualEquation,
+  Problem,
+  State,
+  DualState,
+
+  ZeroDGrid,
+  OneDGrid,
+  TwoDGrid,
+  dealias!,
+
+  AbstractDiagnostic,
+  Diagnostic,
+  resize!,
+  update!,
+  increment!,
+
+  Output,
+  saveoutput,
+  saveproblem,
+  groupsize,
+  savediagnostic, 
+
+  @createarrays,
+
   AbstractForwardEulerTimeStepper,
   AbstractFilteredForwardEulerTimeStepper,
   AbstractRK4TimeStepper,
-  AbstractFilteredRK4TimeStepper
+  AbstractFilteredRK4TimeStepper,
+  ForwardEulerTimeStepper, 
+  FilteredForwardEulerTimeStepper,
+  RK4TimeStepper, 
+  FilteredRK4TimeStepper,
+  DualRK4TimeStepper, 
+  DualFilteredRK4TimeStepper,
+  ETDRK4TimeStepper, 
+  FilteredETDRK4TimeStepper,
+  DualETDRK4TimeStepper, 
+  DualFilteredETDRK4TimeStepper,
+  AB3TimeStepper, 
+  FilteredAB3TimeStepper,
+  stepforward!
+
+using 
+  Requires,
+  FFTW,
+  Statistics,
+  JLD2,
+  Interpolations
+
+import
+  SpecialFunctions,
+  LinearAlgebra: mul!, ldiv!,
+  Base: resize!, getindex, setindex!, push!, append!, fieldnames
+
 
 # --
 # Abstract supertypes
@@ -29,6 +77,10 @@ abstract type AbstractEquation end
 abstract type AbstractState end
 abstract type AbstractProblem end
 
+abstract type AbstractTwoDGrid <: AbstractGrid end
+abstract type AbstractOneDGrid <: AbstractGrid end
+
+abstract type AbstractDiagnostic end
 
 # --
 # Base functionality
@@ -40,7 +92,6 @@ include("diagnostics.jl")
 include("output.jl")
 include("utils.jl")
 include("timesteppers.jl")
-
 
 # --
 # Physics
