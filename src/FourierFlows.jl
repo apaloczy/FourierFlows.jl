@@ -1,14 +1,6 @@
 module FourierFlows
 
 export 
-  AbstractGrid,
-  AbstractParams,
-  AbstractVars,
-  AbstractEquation,
-  AbstractTimeStepper,
-  AbstractState,
-  AbstractProblem,
-
   Equation,
   DualEquation,
   Problem,
@@ -20,7 +12,6 @@ export
   TwoDGrid,
   dealias!,
 
-  AbstractDiagnostic,
   Diagnostic,
   resize!,
   update!,
@@ -34,10 +25,6 @@ export
 
   @createarrays,
 
-  AbstractForwardEulerTimeStepper,
-  AbstractFilteredForwardEulerTimeStepper,
-  AbstractRK4TimeStepper,
-  AbstractFilteredRK4TimeStepper,
   ForwardEulerTimeStepper, 
   FilteredForwardEulerTimeStepper,
   RK4TimeStepper, 
